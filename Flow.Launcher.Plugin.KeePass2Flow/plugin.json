@@ -1,0 +1,12 @@
+{
+    "ID": "a6da9c8f-523f-4806-a140-45f10af18e21",
+    "ActionKeyword": "kp",
+    "Name": "KeePass2Flow",
+    "Description": "Hook up Flow to KeePass 2",
+    "Author": "mvarendorff",
+    "Version": "1.0.0",
+    "Language": "csharp",
+    "Website": "https://github.com/mvarendorff/Flow.Launcher.Plugin.KeePass2Flow",
+    "IcoPath": "icon.png",
+    "ExecuteFileName": "Flow.Launcher.Plugin.KeePass2Flow.dll"
+}

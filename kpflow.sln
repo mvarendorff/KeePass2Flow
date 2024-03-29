@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flow.Launcher.Plugin.KeePass2Flow", "Flow.Launcher.Plugin.KeePass2Flow\Flow.Launcher.Plugin.KeePass2Flow.csproj", "{FBEA4C2C-2E0C-4F57-BE15-24B036286599}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTesting", "ConsoleTesting\ConsoleTesting.csproj", "{9D15B23C-86DD-4313-97B0-9AB899A1DB72}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeePass2Client", "KeePass2Client\KeePass2Client.csproj", "{1AF42DD6-669E-4C26-BFC9-D04096711C8F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FBEA4C2C-2E0C-4F57-BE15-24B036286599}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBEA4C2C-2E0C-4F57-BE15-24B036286599}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBEA4C2C-2E0C-4F57-BE15-24B036286599}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBEA4C2C-2E0C-4F57-BE15-24B036286599}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D15B23C-86DD-4313-97B0-9AB899A1DB72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D15B23C-86DD-4313-97B0-9AB899A1DB72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D15B23C-86DD-4313-97B0-9AB899A1DB72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D15B23C-86DD-4313-97B0-9AB899A1DB72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AF42DD6-669E-4C26-BFC9-D04096711C8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AF42DD6-669E-4C26-BFC9-D04096711C8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AF42DD6-669E-4C26-BFC9-D04096711C8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AF42DD6-669E-4C26-BFC9-D04096711C8F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
