@@ -1,4 +1,6 @@
+using System.Text.Json;
 using WebSocket4Net;
+using ErrorEventArgs = SuperSocket.ClientEngine.ErrorEventArgs;
 
 namespace Keepass2Client;
 
@@ -27,17 +29,57 @@ public class KeePass2Client
 
     private void OnMessage(object? sender, MessageReceivedEventArgs e)
     {
-        Console.Out.WriteLine(e);
+        Console.Out.WriteLine($"<< {e.Message}");
+
+        var parsedMessage = JsonSerializer.Deserialize<JsonElement>(e.Message);
+        var protocol = parsedMessage.GetProperty("protocol").GetString()!;
+        HandleByProtocol(protocol, parsedMessage);
+    }
+
+    private void HandleByProtocol(string protocol, JsonElement parsedMessage)
+    {
+        switch (protocol)
+        {
+            case "setup": HandleSetup(parsedMessage);
+                break;
+        }
+    }
+
+    private void HandleSetup(JsonElement parsedMessage)
+    {
+        var stage = parsedMessage.GetProperty("srp").GetProperty("stage").GetString()!;
+        if (stage == "identifyToClient")
+        {
+            
+        }
     }
 
     private void OnClosed(object? sender, EventArgs e)
     {
-        Console.Out.WriteLine(e);
+        if (e is ClosedEventArgs closedE)
+        {
+            Console.Out.WriteLine($"{closedE.Code} {closedE.Reason}");
+        }
         _onClosedTaskSource.SetResult();
     }
 
     private void OnError(object? sender, EventArgs e)
     {
-        Console.Out.WriteLine(e);
+        if (e is ErrorEventArgs errorE)
+        {
+            Console.Out.WriteLine(errorE.Exception);
+        }
+        Console.Out.WriteLine("Error!");
+    }
+
+    public async Task Dispose()
+    {
+        await _webSocket.CloseAsync();
+    }
+
+    public void Send(string message)
+    {
+        Console.Out.WriteLine($">> {message}");
+        _webSocket.Send(message);
     }
 }

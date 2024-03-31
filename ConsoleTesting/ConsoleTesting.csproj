@@ -10,5 +10,9 @@
     <ItemGroup>
         <ProjectReference Include="../KeePass2Client/KeePass2Client.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="srp" Version="1.0.7" />
+    </ItemGroup>
     
 </Project>

@@ -3,10 +3,10 @@
     "ActionKeyword": "kp",
     "Name": "KeePass2Flow",
     "Description": "Hook up Flow to KeePass 2",
-    "Author": "mvarendorff",
+    "Author": "geisterfurz007",
     "Version": "1.0.0",
     "Language": "csharp",
-    "Website": "https://github.com/mvarendorff/Flow.Launcher.Plugin.KeePass2Flow",
+    "Website": "https://github.com/geisterfurz007/KeePass2Flow",
     "IcoPath": "icon.png",
     "ExecuteFileName": "Flow.Launcher.Plugin.KeePass2Flow.dll"
 }

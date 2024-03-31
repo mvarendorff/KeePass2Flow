@@ -4,9 +4,9 @@
     <TargetFramework>net7.0-windows</TargetFramework>
     <AssemblyName>Flow.Launcher.Plugin.KeePass2Flow</AssemblyName>
     <PackageId>Flow.Launcher.Plugin.KeePass2Flow</PackageId>
-    <Authors>mvarendorff</Authors>
-    <PackageProjectUrl>https://github.com/mvarendorff/Flow.Launcher.Plugin.KeePass2Flow</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/mvarendorff/Flow.Launcher.Plugin.KeePass2Flow</RepositoryUrl>
+    <Authors>geisterfurz007</Authors>
+    <PackageProjectUrl>https://github.com/geisterfurz007/KeePass2Flow</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/geisterfurz007/KeePass2Flow</RepositoryUrl>
     <PackageTags>flow-launcher flow-plugin</PackageTags>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
