@@ -13,11 +13,7 @@ public class Settings : BaseModel
         }
     }
 
-    public ObservableCollection<DatabaseSetting> Databases { get; set; } = new()
-    {
-        // TODO configurable
-        new DatabaseSetting("Private", @"C:\Users\miche\Documents\Database.kdbx")
-    };
+    public ObservableCollection<DatabaseSetting> Databases { get; set; } = new() ;
 
     [JsonIgnore] public DatabaseSetting? SelectedDatabase { get; set; }
 

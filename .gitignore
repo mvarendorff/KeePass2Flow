@@ -352,3 +352,6 @@ MigrationBackup/
 .ionide/
 
 .idea
+
+# Local testing environment for the KeePass2Client not meant for public consumption
+ConsoleTesting/
