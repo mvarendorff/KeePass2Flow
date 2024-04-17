@@ -7,6 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="BouncyCastle.Cryptography" Version="2.3.0" />
       <PackageReference Include="WebSocket4Net" Version="0.15.2" />
+      <PackageReference Include="srp" Version="1.0.7" />
     </ItemGroup>
 </Project>

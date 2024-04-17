@@ -1,18 +1,23 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
+using System.Windows.Media;
+using Flow.Launcher.Plugin.KeePass2Flow.KeePass;
 using Flow.Launcher.Plugin.KeePass2Flow.Settings;
-using Flow.Launcher.Plugin.SharedCommands;
+using Keepass2Client;
+using Keepass2Client.Entities;
+using Keepass2Client.Setup;
 
 namespace Flow.Launcher.Plugin.KeePass2Flow;
 
-public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IDisposable
+public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IAsyncDisposable
 {
+    private const string KpUsername = "kp2flow2";
+
     private PluginInitContext _context = default!;
     private SettingsViewModel _settingsViewModel = default!;
     
@@ -21,12 +26,28 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IDisposable
     private HashSet<DatabaseSetting> _activeDbs = new();
 
     private Settings.Settings Settings => _settingsViewModel.Settings;
-    
+
+    private KeePass2Client _keePass2Client;
+    private KeePassPasswordFromFlowProvider _passwordFromFlowProvider;
+
     public async Task InitAsync(PluginInitContext context)
     {
-        _context = context;
+        // Console.SetOut(new StreamWriter(context.CurrentPluginMetadata.PluginDirectory + Path.DirectorySeparatorChar + "ze.log"));
         
-        _context.API.SavePluginSettings();
+        _context = context;
+
+        _passwordFromFlowProvider = new KeePassPasswordFromFlowProvider(context);
+        _keePass2Client = new KeePass2Client(
+            new KeePassSrp {Username = KpUsername},
+            new KeePassKeyFileStorage(KpUsername, context.CurrentPluginMetadata.PluginDirectory),
+            _passwordFromFlowProvider
+        );
+
+        // TODO improve UX here, show a message box when initializing so the user knows what to do
+        // TODO expose the authentication through the settings panel as well
+        // TODO ensure that keepass is actually running here; otherwise we run into an error
+        _keePass2Client.InitAsync().ContinueWith(_ => _context.API.ShowMsg("Initialized!"));
+        
         var settings = _context.API.LoadSettingJsonStorage<Settings.Settings>();
         _settingsViewModel = new SettingsViewModel(settings);
     }
@@ -35,8 +56,6 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IDisposable
     {
         if (query.FirstSearch?.ToLower() == "open")
         {
-            // TODO integrate _context.API.FuzzySearch
-            
             return Settings.Databases
                 .Where(db => db.Name.ToLower().StartsWith(query.SecondSearch.ToLower()))
                 .Select(db => new Result {
@@ -46,6 +65,7 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IDisposable
                 Action = _ =>
                 {
                     var keePassPath = Settings.KeePassPath;
+                    // TODO replace this with a call to KeePassRPC if we're authenticated
                     _context.API.ShellRun($"\"{db.Path}\"", keePassPath);
                     _context.API.ChangeQuery(_context.CurrentPluginMetadata.ActionKeyword);
                     return true;
@@ -54,7 +74,7 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IDisposable
             }).ToList();
         }
         
-        return new List<Result> {
+        var results = new List<Result> {
             new()
             {
                 Title = "open",
@@ -68,16 +88,58 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IDisposable
                 Score = 0,
             },
         };
+
+        if (query.FirstSearch?.ToLower() == "auth" && _passwordFromFlowProvider.RequestInProgress)
+        {
+            results.Add(new()
+            {
+                Title = "auth",
+                SubTitle = "Authenticate the connection to KeePassRPC",
+                Action = _ =>
+                {
+                    _passwordFromFlowProvider.SetPassword(query.SecondSearch);
+                    return true;
+                },
+                Score = 10,
+            });
+        }
+
+        if (await _keePass2Client.IsAuthenticated)
+        {
+            var entries = (await _keePass2Client.GetPasswords(query.Search)).ToList();
+
+            results.AddRange(entries.Select(e => new Result
+            {
+                Title = e.Title,
+                SubTitle = e.Username + " - " + e.Parent?.Title,
+                Action = _ =>
+                {
+                    CopyToClipboard(e);
+                    return true;
+                },
+                Icon = () => (ImageSource?) new ImageSourceConverter().ConvertFrom(e.Icon),
+                Score = _context.API.FuzzySearch(query.Search, e.Title).Score,
+            }));
+        }
+
+        return results;
     }
 
+    private static async void CopyToClipboard(Entry entry)
+    {
+        var pw = entry.Password ?? "";
+        Clipboard.SetText(pw);
+        await Task.Delay(TimeSpan.FromSeconds(5));
+        if (Clipboard.GetText() == pw) Clipboard.SetText("");
+    }
+    
     public Control CreateSettingPanel()
     {
         return new SettingsControl(_context, _settingsViewModel);
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        // TODO close the websocket and all other clients here
-        throw new NotImplementedException();
+        await _keePass2Client.Dispose();
     }
 }

@@ -11,7 +11,6 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <UseWpf>true</UseWpf>
-    <!-- TODO? set this to true and throw inheritdoc at everything-->
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -37,6 +36,10 @@
   <ItemGroup>
     <PackageReference Include="Flow.Launcher.Plugin" Version="4.1.0" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="../Keepass2Client/Keepass2Client.csproj" />
+  </ItemGroup>
 
   <ItemGroup>
     <Page Update="Settings\SettingsControl.xaml">
@@ -44,10 +47,6 @@
       <XamlRuntime>Wpf</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="KeePass2\" />
   </ItemGroup>
 
 </Project>
