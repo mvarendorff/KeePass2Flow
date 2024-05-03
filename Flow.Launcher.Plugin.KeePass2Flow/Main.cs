@@ -34,7 +34,7 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IAsyncDisposable
         _passwordFromFlowProvider = new KeePassPasswordFromFlowProvider(context);
         _keePass2Client = new KeePass2Client(
             new KeePassSrp {Username = KpUsername},
-            new KeePassKeyFileStorage(KpUsername, context.CurrentPluginMetadata.PluginDirectory),
+            new KeePassCredentialManagerKeyStorage(KpUsername),
             _passwordFromFlowProvider
         );
 
