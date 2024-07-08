@@ -23,8 +23,25 @@ public class KeePass2Client
     private readonly KeePassKeyStorage _keyStorage;
     private readonly IKeePassPasswordProvider _passwordProvider;
     
-    private WebSocket _webSocket;
+    private readonly WebSocket _webSocket;
     private const string KpServerUri = "ws://127.0.0.1:12546";
+
+    private static int ClientVersion
+    {
+        get
+        {
+            const string versionString = "2.0.0";
+            var bytes = versionString.Split(".").Select(byte.Parse).ToArray();
+            if (bytes.Length < sizeof(int))
+            {
+                bytes = Enumerable.Repeat<byte>(0, sizeof(int) - bytes.Length).Concat(bytes).ToArray();
+            }
+
+            bytes = bytes.Reverse().ToArray();
+
+            return BitConverter.ToInt32(bytes, 0);
+        }
+    }
 
     private readonly Dictionary<string, TaskCompletionSource<JsonElement>> _results = new();
     
@@ -74,8 +91,8 @@ public class KeePass2Client
         var setupMessage = new Dictionary<string, dynamic?>
         {
             {"protocol", "setup"},
-            {"version", 69632},
-            {"features", new[] {"KPRPC_FEATURE_VERSION_1_6"}},
+            {"version", ClientVersion},
+            {"features", new[] {"KPRPC_FEATURE_VERSION_1_6", "KPRPC_FEATURE_WARN_USER_WHEN_FEATURE_MISSING"}},
             {"clientTypeId", "kpflow"},
             {"clientDisplayName", "KeePass2Flow"},
             {"clientDisplayDescription", "Connecting Flow Launcher to KeePass 2"}
@@ -186,7 +203,7 @@ public class KeePass2Client
                 {"cr", cr},
                 {"securityLevel", 2},
             }},
-            {"version", 69632}
+            {"version", ClientVersion}
         };
         var keyChallengeJson = JsonSerializer.Serialize(keyChallenge);
         Send(keyChallengeJson);
@@ -217,7 +234,7 @@ public class KeePass2Client
                 { "M", sessionM },
                 { "securityLevel", 2 }
             }},
-            {"version", 69632}
+            {"version", ClientVersion}
         };
         var proofMessageJson = JsonSerializer.Serialize(proofMessage);
         Send(proofMessageJson);
@@ -286,8 +303,7 @@ public class KeePass2Client
             { "key", null },
             { "error", null },
             { "jsonrpc", encryptedMessage },
-            // TODO figure out how to get the correct version and where to store it :)
-            { "version", 69632 }
+            { "version", ClientVersion }
         };
         var serializerOptions = new JsonSerializerOptions
         {
