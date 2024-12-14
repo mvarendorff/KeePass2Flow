@@ -130,7 +130,7 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IAsyncDisposable
         {
             results.Add(new()
             {
-                Title = "auth",
+                Title = $"auth {query.SecondSearch}",
                 SubTitle = "Authenticate the connection to KeePassRPC",
                 Action = _ =>
                 {
