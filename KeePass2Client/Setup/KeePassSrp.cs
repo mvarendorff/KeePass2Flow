@@ -42,6 +42,11 @@ public class KeePassSrp
     
     public KeePassSrp()
     {
+        GenerateKeypair();
+    }
+
+    private void GenerateKeypair()
+    {
         var random = new Random();
         a = random.NextBigInteger(32);
         A = BigInteger.ModPow(g, a, N);
@@ -56,10 +61,10 @@ public class KeePassSrp
     {
         var state = new
         {
-            bigA = A.ToString(),
-            smallA = a.ToString(),
+            bigA = A.ToString("X").TrimStart('0'),
+            smallA = a.ToString("X").TrimStart('0'),
             BStr,
-            B = B.ToString(),
+            B = B.ToString("X").TrimStart('0'),
             MStr,
             M2Str,
             SrpPassword,
@@ -107,5 +112,15 @@ public class KeePassSrp
     public string GetKey()
     {
         return _key ??= Utils.Hash(S!.Value.ToString("X"));
+    }
+    
+    public void Reset() 
+    {
+        GenerateKeypair();
+        _key = null;
+        B = BigInteger.MinusOne;
+        BStr = "unset";
+        MStr = "unset";
+        SrpPassword = "unset";
     }
 }

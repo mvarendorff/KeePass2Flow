@@ -365,6 +365,7 @@ public class KeePass2Client
 
     public async Task Disconnect()
     {
+        _keePassSrp.Reset();
         await _keyStorage.DropKey();
         await _webSocket.CloseAsync();
         await _onClosedTaskSource.Task;
