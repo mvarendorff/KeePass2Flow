@@ -33,7 +33,14 @@ public class KeePassCredentialManagerKeyStorage : KeePassKeyStorage
 
     public override Task DropKey()
     {
-        CredentialManager.RemoveCredentials(CredentialsKey);
+        try
+        {
+            CredentialManager.RemoveCredentials(CredentialsKey);
+        }
+        catch
+        {
+            // Ignore
+        }
 
         return Task.CompletedTask;
     }
