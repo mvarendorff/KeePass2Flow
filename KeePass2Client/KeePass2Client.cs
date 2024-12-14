@@ -357,4 +357,16 @@ public class KeePass2Client
         Console.Out.WriteLine($">> {message}");
         _webSocket.Send(message);
     }
+
+    public string DumpDebugInformation()
+    {
+        return _keePassSrp.GetDebugInfoJson();
+    }
+
+    public async Task Disconnect()
+    {
+        await _keyStorage.DropKey();
+        await _webSocket.CloseAsync();
+        await _onClosedTaskSource.Task;
+    }
 }

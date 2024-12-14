@@ -22,4 +22,18 @@ public class KeePassKeyFileStorage : KeePassKeyStorage
     {
         await File.WriteAllTextAsync(_path, key);
     }
+
+    public override Task DropKey()
+    {
+        try
+        {
+            File.Delete(_path);
+        }
+        catch
+        {
+            // Ignore
+        }
+
+        return Task.CompletedTask;
+    }
 }

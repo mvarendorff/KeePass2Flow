@@ -17,6 +17,7 @@ public abstract class KeePassKeyStorage
 
     protected abstract Task<string> GetStoredKeyAsync();
     public abstract Task StoreKeyAsync(string key);
+    public abstract Task DropKey();
 
     public async Task<string> GetKey() => _storedKey ??= await GetStoredKeyAsync();
 

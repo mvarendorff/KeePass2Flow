@@ -2,6 +2,7 @@
 
 using System.Globalization;
 using System.Numerics;
+using System.Text.Json;
 using Keepass2Client.Extensions;
 
 namespace Keepass2Client.Setup;
@@ -15,6 +16,13 @@ public class KeePassSrp
 {
     private readonly BigInteger A;
     private readonly BigInteger a;
+
+    # region stored for debug
+    private string BStr = "unset";
+    private BigInteger B = BigInteger.MinusOne;
+    private string MStr = "unset";
+    private string SrpPassword = "unset";
+    # endregion stored for debug
 
     public required string Username;
     
@@ -44,6 +52,22 @@ public class KeePassSrp
         }
     }
 
+    public string GetDebugInfoJson()
+    {
+        var state = new
+        {
+            bigA = A.ToString(),
+            smallA = a.ToString(),
+            BStr,
+            B = B.ToString(),
+            MStr,
+            M2Str,
+            SrpPassword,
+        };
+
+         return JsonSerializer.Serialize(state);
+    }
+
     private BigInteger CustomParse(string hex)
     {
         var bytes = Convert.FromHexString(hex).Reverse().ToArray();
@@ -66,6 +90,11 @@ public class KeePassSrp
         
         var MStr = Utils.Hash(AStr + BStr + SStr);
         M2Str = Utils.Hash(AStr + MStr + SStr).ToUpper();
+
+        this.B = B;
+        this.BStr = BStr;
+        this.MStr = MStr;
+        this.SrpPassword = password;
 
         return MStr;
     }

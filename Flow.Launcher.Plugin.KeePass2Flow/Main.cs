@@ -17,15 +17,15 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IAsyncDisposable
 {
     private const string KpUsername = "kp2flow2";
 
-    private PluginInitContext _context = default!;
-    private SettingsViewModel _settingsViewModel = default!;
+    private PluginInitContext _context = null!;
+    private SettingsViewModel _settingsViewModel = null!;
     
     private Settings.Settings Settings => _settingsViewModel.Settings;
 
-    private KeePass2Client _keePass2Client = default!;
-    private KeePassPasswordFromFlowProvider _passwordFromFlowProvider = default!;
+    private KeePass2Client _keePass2Client = null!;
+    private KeePassPasswordFromFlowProvider _passwordFromFlowProvider = null!;
 
-    private Timer _initTimer = default!;
+    private Timer _initTimer = null!;
 
     public Task InitAsync(PluginInitContext context)
     {
@@ -93,6 +93,37 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IAsyncDisposable
                 },
                 Score = 0,
             },
+            new ()
+            {
+                Title = "debug",
+                SubTitle = "Dump debug information",
+                AutoCompleteText = $"{_context.CurrentPluginMetadata.ActionKeyword} debug ",
+                Action = _ =>
+                {
+                    var debugInformation = _keePass2Client.DumpDebugInformation();
+                    _context.API.CopyToClipboard(debugInformation, showDefaultNotification: false);
+                    _context.API.ShowMsg("KeePass2Flow", "Debug information copied to clipboard.");
+                    
+                    return false;
+                },
+                Score = 0,
+            },
+            # if DEBUG
+            new ()
+            {
+                Title = "reconnect",
+                SubTitle = "Reconnect to KeePassRPC",
+                AutoCompleteText = $"{_context.CurrentPluginMetadata.ActionKeyword} reconnect ",
+                AsyncAction = async _ =>
+                {
+                    await _keePass2Client.Disconnect();
+                    TryInit(null);
+                    
+                    return false;
+                },
+                Score = 0,
+            },
+            # endif
         };
 
         if (query.FirstSearch?.ToLower() == "auth" && _passwordFromFlowProvider.RequestInProgress)

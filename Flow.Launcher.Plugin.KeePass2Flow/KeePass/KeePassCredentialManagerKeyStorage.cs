@@ -30,6 +30,13 @@ public class KeePassCredentialManagerKeyStorage : KeePassKeyStorage
 
         return Task.CompletedTask;
     }
+
+    public override Task DropKey()
+    {
+        CredentialManager.RemoveCredentials(CredentialsKey);
+
+        return Task.CompletedTask;
+    }
 }
 
 public class KeyNotFoundException : Exception {}
