@@ -23,7 +23,7 @@ public class KeePassKeyFileStorage : KeePassKeyStorage
         await File.WriteAllTextAsync(_path, key);
     }
 
-    public override Task DropKey()
+    protected override Task DropKey()
     {
         try
         {

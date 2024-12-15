@@ -5,9 +5,8 @@ namespace Keepass2Client.Setup;
 public abstract class KeePassKeyStorage
 {
     protected readonly string Username;
-    private string? _storedKey;
 
-    public string Cc { get; } = new Random().NextBigInteger(32).ToString("x");
+    public string Cc { get; private set; } = new Random().NextBigInteger(32).ToString("x");
     private string? _sc;
     
     protected KeePassKeyStorage(string username)
@@ -17,10 +16,17 @@ public abstract class KeePassKeyStorage
 
     protected abstract Task<string> GetStoredKeyAsync();
     public abstract Task StoreKeyAsync(string key);
-    public abstract Task DropKey();
+    protected abstract Task DropKey();
 
-    public async Task<string> GetKey() => _storedKey ??= await GetStoredKeyAsync();
+    public async Task<string> GetKey() => await GetStoredKeyAsync();
 
+    public async Task Reset()
+    {
+        await DropKey();
+        _sc = null;
+        Cc = new Random().NextBigInteger(32).ToString("x");
+    }
+    
     public async Task<bool> HasKey()
     {
         try

@@ -31,7 +31,7 @@ public class KeePassCredentialManagerKeyStorage : KeePassKeyStorage
         return Task.CompletedTask;
     }
 
-    public override Task DropKey()
+    protected override Task DropKey()
     {
         try
         {

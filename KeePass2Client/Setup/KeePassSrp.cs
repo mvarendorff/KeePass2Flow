@@ -34,7 +34,6 @@ public class KeePassSrp
     private readonly BigInteger k = BigInteger.Parse("0b7867f1299da8cc24ab93e08986ebc4d6a478ad0", NumberStyles.HexNumber);
 
     private BigInteger? S;
-    private string? _key;
     
     private string? M2Str;
 
@@ -111,13 +110,12 @@ public class KeePassSrp
 
     public string GetKey()
     {
-        return _key ??= Utils.Hash(S!.Value.ToString("X"));
+        return Utils.Hash(S!.Value.ToString("X"));
     }
     
     public void Reset() 
     {
         GenerateKeypair();
-        _key = null;
         B = BigInteger.MinusOne;
         BStr = "unset";
         MStr = "unset";
