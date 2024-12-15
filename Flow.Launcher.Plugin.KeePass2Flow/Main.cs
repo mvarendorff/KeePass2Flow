@@ -93,6 +93,7 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IAsyncDisposable
                 },
                 Score = 0,
             },
+            # if DEBUG
             new ()
             {
                 Title = "debug",
@@ -108,7 +109,6 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IAsyncDisposable
                 },
                 Score = 0,
             },
-            # if DEBUG
             new ()
             {
                 Title = "reconnect",
