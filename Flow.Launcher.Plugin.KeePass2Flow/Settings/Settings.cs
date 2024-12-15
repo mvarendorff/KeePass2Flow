@@ -13,7 +13,7 @@ public class Settings : BaseModel
         }
     }
 
-    public ObservableCollection<DatabaseSetting> Databases { get; set; } = new() ;
+    public ObservableCollection<DatabaseSetting> Databases { get; set; } = new();
 
     [JsonIgnore] public DatabaseSetting? SelectedDatabase { get; set; }
 

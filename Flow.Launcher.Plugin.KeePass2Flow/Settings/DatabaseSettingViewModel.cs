@@ -6,6 +6,6 @@ public class DatabaseSettingViewModel : BaseModel
     {
         DatabaseSetting = databaseSetting ?? new DatabaseSetting("", "");
     }
-    
+
     public DatabaseSetting DatabaseSetting { get; }
 }

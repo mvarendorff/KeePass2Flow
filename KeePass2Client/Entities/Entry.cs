@@ -1,6 +1,6 @@
 namespace Keepass2Client.Entities;
 
-public enum FormFieldType {FFTradio, FFTusername, FFTtext, FFTpassword, FFTselect, FFTcheckbox};
+public enum FormFieldType { FFTradio, FFTusername, FFTtext, FFTpassword, FFTselect, FFTcheckbox };
 public record FormField(string Name, string Value, FormFieldType Type);
 public record Group(string Title);
 

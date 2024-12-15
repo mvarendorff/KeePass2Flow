@@ -10,7 +10,7 @@ public class KeePassCredentialManagerKeyStorage : KeePassKeyStorage
 {
     private const string CredentialsKeyBase = "KeePass2Flow";
     private string CredentialsKey => CredentialsKeyBase + "-" + Username;
-    
+
     public KeePassCredentialManagerKeyStorage(string username) : base(username)
     {
     }
@@ -25,11 +25,25 @@ public class KeePassCredentialManagerKeyStorage : KeePassKeyStorage
 
     public override Task StoreKeyAsync(string key)
     {
-        var credential = new NetworkCredential {Password = key, UserName = Username};
+        var credential = new NetworkCredential { Password = key, UserName = Username };
         CredentialManager.SaveCredentials(CredentialsKey, credential);
+
+        return Task.CompletedTask;
+    }
+
+    protected override Task DropKey()
+    {
+        try
+        {
+            CredentialManager.RemoveCredentials(CredentialsKey);
+        }
+        catch
+        {
+            // Ignore
+        }
 
         return Task.CompletedTask;
     }
 }
 
-public class KeyNotFoundException : Exception {}
+public class KeyNotFoundException : Exception { }
