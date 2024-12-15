@@ -22,7 +22,7 @@ public class KeePass2Client
     private readonly KeePassSrp _keePassSrp;
     private readonly KeePassKeyStorage _keyStorage;
     private readonly IKeePassPasswordProvider _passwordProvider;
-    
+
     private readonly WebSocket _webSocket;
     private const string KpServerUri = "ws://127.0.0.1:12546";
 
@@ -44,7 +44,7 @@ public class KeePass2Client
     }
 
     private readonly Dictionary<string, TaskCompletionSource<JsonElement>> _results = new();
-    
+
     private TaskCompletionSource _onClosedTaskSource = new();
     private TaskCompletionSource _onHandshakeCompleted = new();
 
@@ -53,7 +53,7 @@ public class KeePass2Client
     public Task Closed => _onClosedTaskSource.Task;
     public Task<bool> IsAuthenticated => _keyStorage.HasKey();
     public Task<bool> IsReady => IsAuthenticated.ContinueWith(authenticated => authenticated.Result && ClientState == ClientState.Connected);
-    
+
     public KeePass2Client(KeePassSrp keePassSrp, KeePassKeyStorage keyStorage, IKeePassPasswordProvider passwordProvider)
     {
         _keePassSrp = keePassSrp;
@@ -64,7 +64,7 @@ public class KeePass2Client
             // KeePassRPC only allows special origins that indicate a browser extension, so we pretend to be one
             new("Origin", "moz-extension://kpflow")
         });
-        
+
         _webSocket.MessageReceived += OnMessage;
         _webSocket.Closed += OnClosed;
         _webSocket.Error += OnError;
@@ -140,9 +140,11 @@ public class KeePass2Client
     {
         switch (protocol)
         {
-            case "setup": HandleSetup(parsedMessage);
+            case "setup":
+                HandleSetup(parsedMessage);
                 break;
-            case "jsonrpc": HandleJsonRpc(parsedMessage);
+            case "jsonrpc":
+                HandleJsonRpc(parsedMessage);
                 break;
         }
     }
@@ -154,11 +156,11 @@ public class KeePass2Client
         {
             var isChallenge1 = key.TryGetProperty("sc", out var sc);
             if (isChallenge1) KeyChallengeResponse1(sc.GetString()!).Wait();
-            
+
             var isChallenge2 = key.TryGetProperty("sr", out var sr);
             if (isChallenge2) KeyChallengeResponse2(sr.GetString()!).Wait();
         }
-        
+
         var isSrp = parsedMessage.TryGetProperty("srp", out var srp);
         if (isSrp)
         {
@@ -182,15 +184,15 @@ public class KeePass2Client
         if (!json.TryGetProperty("id", out var id)) return;
 
         if (id.ValueKind != JsonValueKind.String) return;
-        
+
         var requestId = id.GetString();
         if (requestId is null) return;
-            
+
         Console.Out.WriteLine(json);
 
         _results[requestId].SetResult(json);
     }
-    
+
     private async Task KeyChallengeResponse1(string sc)
     {
         var cr = await _keyStorage.GetCr(sc);
@@ -213,7 +215,7 @@ public class KeePass2Client
     {
         var validated = await _keyStorage.ValidateSr(sr);
         if (!validated) throw new Exception("Key challenge response 2 mismatch!");
-        
+
         _onHandshakeCompleted.SetResult();
     }
 
@@ -248,19 +250,19 @@ public class KeePass2Client
         {
             return;
         }
-        
+
         var serverM2 = parsedMessage.GetProperty("srp").GetProperty("M2").GetString()!;
         _keePassSrp.ValidateServerProof(serverM2);
 
         _keyStorage.StoreKeyAsync(_keePassSrp.GetKey()).Wait();
-     
+
         _onHandshakeCompleted.SetResult();
     }
-    
+
     private void OnClosed(object? sender, EventArgs e)
     {
         ClientState = ClientState.Disconnected;
-        
+
         if (e is ClosedEventArgs closedE)
         {
             Console.Out.WriteLine($"CLOSED: {closedE.Code} {closedE.Reason}");
@@ -289,12 +291,12 @@ public class KeePass2Client
     public async Task<JsonElement> SendEncryptedJsonRpc(Dictionary<string, dynamic> payload)
     {
         Debug.Assert(!payload.ContainsKey("id"), "Payload may not contain an ID!");
-        
+
         var requestId = Guid.NewGuid().ToString();
         payload["id"] = requestId;
 
         var serializedPayload = JsonSerializer.Serialize(payload);
-        
+
         var encryptedMessage = KeePassCrypto.Encrypt(serializedPayload, _keyStorage.GetKey().Result);
         var data = new Dictionary<string, dynamic?>
         {
@@ -312,7 +314,7 @@ public class KeePass2Client
         };
         var dataJson = JsonSerializer.Serialize(data, serializerOptions);
         Send(dataJson);
-        
+
         _results[requestId] = new TaskCompletionSource<JsonElement>();
 
         return await _results[requestId].Task;
@@ -349,11 +351,11 @@ public class KeePass2Client
 
         await SendEncryptedJsonRpc(data);
     }
-    
+
     public void Send(string message)
     {
         if (_webSocket.State != WebSocketState.Open) return;
-        
+
         Console.Out.WriteLine($">> {message}");
         _webSocket.Send(message);
     }

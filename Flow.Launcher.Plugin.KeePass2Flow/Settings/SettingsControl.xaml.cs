@@ -15,7 +15,7 @@ public partial class SettingsControl
 {
     private readonly Settings _settings;
     private readonly PluginInitContext _context;
-    
+
     public SettingsControl(PluginInitContext context, SettingsViewModel viewModel)
     {
         InitializeComponent();
@@ -40,7 +40,7 @@ public partial class SettingsControl
     private void OnDeleteDatabaseClick(object sender, RoutedEventArgs e)
     {
         if (_settings.SelectedDatabase == null) return;
-        
+
         var selected = _settings.SelectedDatabase;
         var formatted = $"Are you sure you want to delete {selected.Name}";
 
@@ -58,7 +58,7 @@ public partial class SettingsControl
         (
             _settings.Databases, _context, _settings.SelectedDatabase
         );
-        
+
         webSearch.ShowDialog();
     }
 
@@ -136,7 +136,7 @@ public partial class SettingsControl
             var webSearch = new DatabaseSettingWindow(
                 _settings.Databases, _context, _settings.SelectedDatabase
             );
-            
+
             webSearch.ShowDialog();
         }
     }
@@ -146,7 +146,7 @@ public partial class SettingsControl
         const string filter = "KeePass.exe | KeePass.exe";
         var dialog = new OpenFileDialog { Filter = filter };
         var result = dialog.ShowDialog();
-        
+
         if (result != true) return;
 
         _settings.KeePassPath = dialog.FileName;

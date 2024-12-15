@@ -8,7 +8,7 @@ public abstract class KeePassKeyStorage
 
     public string Cc { get; private set; } = new Random().NextBigInteger(32).ToString("x");
     private string? _sc;
-    
+
     protected KeePassKeyStorage(string username)
     {
         Username = username;
@@ -26,7 +26,7 @@ public abstract class KeePassKeyStorage
         _sc = null;
         Cc = new Random().NextBigInteger(32).ToString("x");
     }
-    
+
     public async Task<bool> HasKey()
     {
         try
@@ -50,7 +50,7 @@ public abstract class KeePassKeyStorage
     public async Task<bool> ValidateSr(string sr)
     {
         if (_sc is null) throw new InvalidOperationException("Sr can only be validated after calculating Cr!");
-        
+
         var key = await GetKey();
         var expectedSr = Utils.Hash("0" + key + _sc + Cc);
 

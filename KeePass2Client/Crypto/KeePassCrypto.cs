@@ -47,7 +47,7 @@ public class KeePassCrypto
 
         // TODO validate hmac
         var hmacBytes = Convert.FromBase64String(message.Hmac);
-        
+
         var decrypted = aes.DecryptCbc(messageBytes, ivBytes);
 
         return Encoding.UTF8.GetString(decrypted);

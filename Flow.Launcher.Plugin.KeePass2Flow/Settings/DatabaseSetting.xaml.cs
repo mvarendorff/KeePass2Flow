@@ -52,12 +52,13 @@ public partial class DatabaseSettingWindow
             }
 
             _knownDatabases.Add(_databaseSetting);
-        } else if (_editMode == EditMode.Edit)
+        }
+        else if (_editMode == EditMode.Edit)
         {
             var existingIndex = _knownDatabases.IndexOf(_oldDatabaseSetting!);
             _knownDatabases[existingIndex] = _databaseSetting;
         }
-        
+
         Close();
     }
 

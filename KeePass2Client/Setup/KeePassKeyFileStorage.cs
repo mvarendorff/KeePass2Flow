@@ -3,7 +3,7 @@ namespace Keepass2Client.Setup;
 public class KeePassKeyFileStorage : KeePassKeyStorage
 {
     private readonly string _path;
-    
+
     public KeePassKeyFileStorage(string username, string basePath = "") : base(username)
     {
         var prependedPath = string.IsNullOrWhiteSpace(basePath) ? "" : basePath + Path.DirectorySeparatorChar;

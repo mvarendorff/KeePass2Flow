@@ -19,7 +19,7 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IAsyncDisposable
 
     private PluginInitContext _context = null!;
     private SettingsViewModel _settingsViewModel = null!;
-    
+
     private Settings.Settings Settings => _settingsViewModel.Settings;
 
     private KeePass2Client _keePass2Client = null!;
@@ -33,14 +33,14 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IAsyncDisposable
 
         _passwordFromFlowProvider = new KeePassPasswordFromFlowProvider(context);
         _keePass2Client = new KeePass2Client(
-            new KeePassSrp {Username = KpUsername},
+            new KeePassSrp { Username = KpUsername },
             new KeePassCredentialManagerKeyStorage(KpUsername),
             _passwordFromFlowProvider
         );
 
         // TODO expose the authentication through the settings panel as well
         _initTimer = new Timer(TryInit, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
-        
+
         var settings = _context.API.LoadSettingJsonStorage<Settings.Settings>();
         _settingsViewModel = new SettingsViewModel(settings);
 
@@ -60,26 +60,27 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IAsyncDisposable
             _context.API.LogException(nameof(KeePass2Flow), "Does this remedy thing?", e);
         }
     }
-    
+
     public async Task<List<Result>> QueryAsync(Query query, CancellationToken ct)
     {
         if (query.FirstSearch?.ToLower() == "open")
         {
             return Settings.Databases
                 .Where(db => db.Name.ToLower().StartsWith(query.SecondSearch.ToLower()))
-                .Select(db => new Result {
-                Title = db.Name,
-                SubTitle = $"Open {db.Name}",
-                AutoCompleteText = $"{_context.CurrentPluginMetadata.ActionKeyword} open {db.Name}",
-                AsyncAction = async _ =>
+                .Select(db => new Result
                 {
-                    await OpenDatabase(db.Path);
-                    return true;
-                },
-                Score = 0,
-            }).ToList();
+                    Title = db.Name,
+                    SubTitle = $"Open {db.Name}",
+                    AutoCompleteText = $"{_context.CurrentPluginMetadata.ActionKeyword} open {db.Name}",
+                    AsyncAction = async _ =>
+                    {
+                        await OpenDatabase(db.Path);
+                        return true;
+                    },
+                    Score = 0,
+                }).ToList();
         }
-        
+
         var results = new List<Result> {
             # if DEBUG
             new ()
@@ -92,7 +93,7 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IAsyncDisposable
                     var debugInformation = _keePass2Client.DumpDebugInformation();
                     _context.API.CopyToClipboard(debugInformation, showDefaultNotification: false);
                     _context.API.ShowMsg("KeePass2Flow", "Debug information copied to clipboard.");
-                    
+
                     return false;
                 },
                 Score = 0,
@@ -106,7 +107,7 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IAsyncDisposable
                 {
                     await _keePass2Client.Disconnect();
                     TryInit(null);
-                    
+
                     return false;
                 },
                 Score = 0,
@@ -158,7 +159,7 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IAsyncDisposable
                     CopyToClipboard((context.SpecialKeyState.CtrlPressed ? e.Username : e.Password) ?? "");
                     return true;
                 },
-                Icon = () => (ImageSource?) new ImageSourceConverter().ConvertFrom(e.Icon),
+                Icon = () => (ImageSource?)new ImageSourceConverter().ConvertFrom(e.Icon),
                 Score = _context.API.FuzzySearch(query.Search, e.Title).Score,
             }));
         }
@@ -186,7 +187,7 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IAsyncDisposable
         _context.API.ShellRun($"\"{path}\"", keePassPath);
         _context.API.ChangeQuery(_context.CurrentPluginMetadata.ActionKeyword);
     }
-    
+
     public Control CreateSettingPanel()
     {
         return new SettingsControl(_context, _settingsViewModel);

@@ -14,8 +14,8 @@ namespace Keepass2Client.Setup;
  */
 public class KeePassSrp
 {
-    private readonly BigInteger A;
-    private readonly BigInteger a;
+    private BigInteger A;
+    private BigInteger a;
 
     # region stored for debug
     private string BStr = "unset";
@@ -25,7 +25,7 @@ public class KeePassSrp
     # endregion stored for debug
 
     public required string Username;
-    
+
     private const string NStr =
         "0d4c7f8a2b32c11b8fba9581ec4ba4f1b04215642ef7355e37c0fc0443ef756ea2c6b8eeb755a1c723027663caa265ef785b8ff6a9b35227a52d86633dbdfca43";
 
@@ -34,11 +34,11 @@ public class KeePassSrp
     private readonly BigInteger k = BigInteger.Parse("0b7867f1299da8cc24ab93e08986ebc4d6a478ad0", NumberStyles.HexNumber);
 
     private BigInteger? S;
-    
+
     private string? M2Str;
 
     public string AStr => A.ToString("X").TrimStart('0');
-    
+
     public KeePassSrp()
     {
         GenerateKeypair();
@@ -69,7 +69,7 @@ public class KeePassSrp
             SrpPassword,
         };
 
-         return JsonSerializer.Serialize(state);
+        return JsonSerializer.Serialize(state);
     }
 
     private BigInteger CustomParse(string hex)
@@ -77,7 +77,7 @@ public class KeePassSrp
         var bytes = Convert.FromHexString(hex).Reverse().ToArray();
         return new BigInteger(bytes, true);
     }
-    
+
     public string SetupSession(string password, string BStr, string serverSalt)
     {
         var B = BigInteger.Parse("0" + BStr, NumberStyles.HexNumber);
@@ -87,11 +87,11 @@ public class KeePassSrp
 
         var kgx = k * BigInteger.ModPow(g, x, N);
         var aux = a + u * x;
-        
+
         S = BigInteger.ModPow(B - kgx, aux, N);
 
         var SStr = S.Value.ToString("X").TrimStart('0');
-        
+
         var MStr = Utils.Hash(AStr + BStr + SStr);
         M2Str = Utils.Hash(AStr + MStr + SStr).ToUpper();
 
@@ -112,8 +112,8 @@ public class KeePassSrp
     {
         return Utils.Hash(S!.Value.ToString("X"));
     }
-    
-    public void Reset() 
+
+    public void Reset()
     {
         GenerateKeypair();
         B = BigInteger.MinusOne;
