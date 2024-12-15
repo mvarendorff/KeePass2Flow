@@ -81,18 +81,6 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IAsyncDisposable
         }
         
         var results = new List<Result> {
-            new()
-            {
-                Title = "open",
-                SubTitle = "Open a database",
-                AutoCompleteText = $"{_context.CurrentPluginMetadata.ActionKeyword} open ",
-                Action = _ =>
-                {
-                    _context.API.ChangeQuery($"{_context.CurrentPluginMetadata.ActionKeyword} open ");
-                    return false;
-                },
-                Score = 0,
-            },
             # if DEBUG
             new ()
             {
@@ -125,6 +113,22 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IAsyncDisposable
             },
             # endif
         };
+
+        if (query.FirstSearch?.ToLower() != "auth")
+        {
+            results.Add(new()
+            {
+                Title = "open",
+                SubTitle = "Open a database",
+                AutoCompleteText = $"{_context.CurrentPluginMetadata.ActionKeyword} open ",
+                Action = _ =>
+                {
+                    _context.API.ChangeQuery($"{_context.CurrentPluginMetadata.ActionKeyword} open ");
+                    return false;
+                },
+                Score = 0,
+            });
+        }
 
         if (query.FirstSearch?.ToLower() == "auth" && _passwordFromFlowProvider.RequestInProgress)
         {
