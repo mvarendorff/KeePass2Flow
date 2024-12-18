@@ -98,20 +98,6 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IAsyncDisposable
                 },
                 Score = 0,
             },
-            new ()
-            {
-                Title = "reconnect",
-                SubTitle = "Reconnect to KeePassRPC",
-                AutoCompleteText = $"{_context.CurrentPluginMetadata.ActionKeyword} reconnect ",
-                AsyncAction = async _ =>
-                {
-                    await _keePass2Client.Disconnect();
-                    TryInit(null);
-
-                    return false;
-                },
-                Score = 0,
-            },
             # endif
         };
 
@@ -129,6 +115,23 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IAsyncDisposable
                 },
                 Score = 0,
             });
+
+            results.Add(
+                new ()
+                {
+                    Title = "reconnect",
+                    SubTitle = "Reset connection to KeePassRPC",
+                    AutoCompleteText = $"{_context.CurrentPluginMetadata.ActionKeyword} reconnect ",
+                    AsyncAction = async _ =>
+                    {
+                        await _keePass2Client.Disconnect();
+                        TryInit(null);
+
+                        return false;
+                    },
+                    Score = 0,
+                }
+            );
         }
 
         if (query.FirstSearch?.ToLower() == "auth" && _passwordFromFlowProvider.RequestInProgress)
