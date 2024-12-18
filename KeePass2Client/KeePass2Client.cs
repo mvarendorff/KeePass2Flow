@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Security.Cryptography;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -178,7 +179,19 @@ public class KeePass2Client
         var hmacBase64 = jsonrpc.GetProperty("hmac").GetString()!;
 
         var encryptedMessage = new EncryptedMessage(messageBase64, ivBase64, hmacBase64);
-        var decryptedMessage = KeePassCrypto.Decrypt(encryptedMessage, _keyStorage.GetKey().Result);
+
+        string decryptedMessage;
+        try
+        {
+            decryptedMessage = KeePassCrypto.Decrypt(encryptedMessage, _keyStorage.GetKey().Result);
+        }
+        catch (CryptographicException)
+        {
+            // Indicates broken key, so we reset our auth-state and reconnect to prompt for a new key.
+            Disconnect().ContinueWith(_ => InitAsync());
+
+            return;
+        }
 
         var json = JsonSerializer.Deserialize<JsonElement>(decryptedMessage);
         if (!json.TryGetProperty("id", out var id)) return;
