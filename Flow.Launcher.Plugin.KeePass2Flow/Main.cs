@@ -117,7 +117,7 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IAsyncDisposable
             });
 
             results.Add(
-                new ()
+                new()
                 {
                     Title = "reconnect",
                     SubTitle = "Reset connection to KeePassRPC",
