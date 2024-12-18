@@ -4,9 +4,9 @@
     <TargetFramework>net7.0-windows</TargetFramework>
     <AssemblyName>Flow.Launcher.Plugin.KeePass2Flow</AssemblyName>
     <PackageId>Flow.Launcher.Plugin.KeePass2Flow</PackageId>
-    <Authors>geisterfurz007</Authors>
-    <PackageProjectUrl>https://github.com/geisterfurz007/KeePass2Flow</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/geisterfurz007/KeePass2Flow</RepositoryUrl>
+    <Authors>mvarendorff</Authors>
+    <PackageProjectUrl>https://github.com/mvarendorff/KeePass2Flow</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/mvarendorff/KeePass2Flow</RepositoryUrl>
     <PackageTags>flow-launcher flow-plugin</PackageTags>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
@@ -46,4 +46,10 @@
     </Page>
   </ItemGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <OutputPath>$(AppData)\FlowLauncher\Plugins\KeePass2Flow</OutputPath>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+    <PreBuildEvent>taskkill /f /fi &quot;IMAGENAME eq Flow.Launcher.exe&quot;</PreBuildEvent>
+    <PostBuildEvent>start &quot;&quot; /d $(LocalAppData)\FlowLauncher\ Flow.Launcher.exe</PostBuildEvent>
+  </PropertyGroup>
 </Project>

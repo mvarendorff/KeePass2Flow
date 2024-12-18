@@ -110,7 +110,7 @@ public class KeePassSrp
 
     public string GetKey()
     {
-        return Utils.Hash(S!.Value.ToString("X"));
+        return Utils.Hash(S!.Value.ToString("X").TrimStart('0'));
     }
 
     public void Reset()
