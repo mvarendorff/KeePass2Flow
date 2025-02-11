@@ -143,7 +143,7 @@ public partial class SettingsControl
 
     private void BrowseKeePass(object sender, RoutedEventArgs e)
     {
-        const string filter = "KeePass.exe | KeePass.exe";
+        const string filter = "KeePass.exe | KeePass.exe | KeePassXC.exe";
         var dialog = new OpenFileDialog { Filter = filter };
         var result = dialog.ShowDialog();
 
