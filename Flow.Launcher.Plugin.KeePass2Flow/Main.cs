@@ -159,7 +159,8 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IAsyncDisposable
                 SubTitle = e.Username + " - " + e.Parent?.Title,
                 Action = context =>
                 {
-                    CopyToClipboard((context.SpecialKeyState.CtrlPressed ? e.Username : e.Password) ?? "");
+                    CopyToClipboard((context.SpecialKeyState.CtrlPressed ? e.Username : e.Password) ?? "")
+                        .ContinueWith(_ => { /* Ignore thrown errors */ }, ct);
                     return true;
                 },
                 Icon = () => (ImageSource?)new ImageSourceConverter().ConvertFrom(e.Icon),
@@ -170,11 +171,27 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IAsyncDisposable
         return results;
     }
 
-    private static async void CopyToClipboard(string content)
+    private static async Task CopyToClipboard(string content)
     {
-        Clipboard.SetText(content);
+        SetClipboard(content);
         await Task.Delay(TimeSpan.FromSeconds(5));
-        if (Clipboard.GetText() == content) Clipboard.SetText("");
+        if (Clipboard.GetText() == content) SetClipboard("");
+    }
+
+    private static void SetClipboard(string text)
+    {
+        for (byte i = 0; i < 10; i++)
+        {
+            try
+            {
+                Clipboard.SetText(text);
+                return;
+            }
+            catch
+            {
+                Thread.Sleep(10);
+            }
+        }
     }
 
     private async Task OpenDatabase(string path)
