@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,6 +16,15 @@ namespace Flow.Launcher.Plugin.KeePass2Flow;
 
 public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IAsyncDisposable
 {
+	[DllImport("user32.dll", SetLastError = true)]
+    static extern bool OpenClipboard(IntPtr hWndNewOwner);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    static extern bool EmptyClipboard();
+
+    [DllImport("user32.dll", SetLastError = true)]
+    static extern bool CloseClipboard();
+
     private const string KpUsername = "kp2flow2";
 
     private PluginInitContext _context = null!;
@@ -184,6 +194,10 @@ public class KeePass2Flow : IAsyncPlugin, ISettingProvider, IAsyncDisposable
         {
             try
             {
+				OpenClipboard(IntPtr.Zero);
+                EmptyClipboard();
+                CloseClipboard();
+				
                 Clipboard.SetText(text);
                 return;
             }
