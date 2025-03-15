@@ -4,7 +4,7 @@
     "Name": "KeePass2Flow",
     "Description": "Hook up Flow to KeePass 2",
     "Author": "mvarendorff",
-    "Version": "1.1.7",
+    "Version": "1.1.8",
     "Language": "csharp",
     "Website": "https://github.com/mvarendorff/KeePass2Flow",
     "IcoPath": "icon.png",
